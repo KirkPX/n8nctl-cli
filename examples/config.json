@@ -1,0 +1,11 @@
+{
+  "baseUrl": "https://n8n.example.com",
+  "email": "you@example.com",
+  "account": "default",
+  "accounts": {
+    "staging": { "baseUrl": "https://n8n-staging.example.com" }
+  },
+  "readOnly": false,
+  "timeoutMs": 30000,
+  "workflowsDir": "workflows"
+}

@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      all:
+        patterns: ["*"]
+    ignore:
+      # Every CLI in the fleet uses the same major version of each tool, so a
+      # major update is made for all of them together, not by one repo's bot.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      all:
+        patterns: ["*"]
+    ignore:
+      # The same rule as npm: the fleet moves to a new Actions major together.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

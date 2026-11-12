@@ -1,0 +1,57 @@
+{
+  "name": "n8nctl-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Manage n8n workflows from the terminal: list, back up, compare, upload and run",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KirkPX/n8nctl-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KirkPX/n8nctl-cli/issues"
+  },
+  "homepage": "https://github.com/KirkPX/n8nctl-cli#readme",
+  "bin": {
+    "n8nctl": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "examples/"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean",
+    "pretest": "npm run build",
+    "setup": "npm ci --engine-strict && npm link && node dist/index.js doctor --install",
+    "dev": "tsx src/index.ts",
+    "doctor": "node dist/index.js doctor",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node dist/index.js --help",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  },
+  "dependencies": {
+    "@napi-rs/keyring": "^2.1.2",
+    "commander": "^15.1.0",
+    "picocolors": "^1.1.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
+  "license": "MIT",
+  "author": "KirkPX"
+}

@@ -1,0 +1,4 @@
+# Enforce LF line endings so the dist/index.js shebang (#!/usr/bin/env node) and
+# scripts are never CRLF-corrupted on a Windows checkout (core.autocrlf=true).
+# text=auto leaves git-detected binary files untouched.
+* text=auto eol=lf
