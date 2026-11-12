@@ -30,3 +30,6 @@ printed or written, and `upload` refuses a file that still holds a placeholder. 
 removal works by pattern, so it can miss a secret in an unusual form: check a backup
 before you make it public. Credentials kept in n8n's own credential store are never part
 of a workflow, and n8nctl never reads them.
+
+`get --keep-secrets` is the one way to see a workflow with its typed-in secrets. It prints
+a warning, and it writes no file.

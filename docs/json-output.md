@@ -84,7 +84,9 @@ A refused confirmation, such as `delete` without `--yes` when nobody can answer,
 
 ## validate
 
-`files[]`, one per file: `file`, `id`, `name`, `valid`, `errors[]`, `warnings[]`. And
+`files[]`, one per file: `file`, `id`, `name`, `valid`, `errors[]`, `warnings[]`, and
+`contentHash` (the hash `backup` would record for it, or `null` when the file is not a
+workflow). And
 `counts`: `total`, `passed`, `failed`. Exit code 1 when any file fails.
 
 ## diff
@@ -97,7 +99,8 @@ otherwise. Exit code 1 when `hasDifferences` is `true`.
 
 ## Others
 
-- `get`: the workflow, in saved form.
+- `get`: the workflow, in saved form. With `--keep-secrets`, the workflow exactly as n8n
+  sends it.
 - `download`: `dir`, `saved[]` (`id`, `name`, `file`), `failed[]` (`workflow`, `error`).
 - `executions`: an array of runs as n8n gives them, each with at least `id`, `workflowId`,
   `status`, `mode`, `startedAt`, `stoppedAt`.

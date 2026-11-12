@@ -3,6 +3,7 @@
 
 import pc from "picocolors";
 import { loadWorkflowFile, resolveWorkflowFiles } from "../../workflow/files.js";
+import { contentHash } from "../../workflow/normalize.js";
 import { checkWorkflow } from "../../workflow/validate.js";
 import { reporter } from "../output.js";
 
@@ -13,6 +14,8 @@ export type ValidateRow = {
   valid: boolean;
   errors: string[];
   warnings: string[];
+  /** The hash a backup would record for this workflow, or null when the file is not one. */
+  contentHash: string | null;
 };
 
 export async function validateCommand(target: string, opts: { json?: boolean } = {}): Promise<void> {
@@ -23,9 +26,10 @@ export async function validateCommand(target: string, opts: { json?: boolean } =
     try {
       const { workflow } = await loadWorkflowFile(file);
       const check = checkWorkflow(workflow);
-      rows.push({ file, id: workflow.id ?? null, name: workflow.name ?? null, ...check });
+      const hash = Array.isArray(workflow.nodes) ? contentHash(workflow) : null;
+      rows.push({ file, id: workflow.id ?? null, name: workflow.name ?? null, ...check, contentHash: hash });
     } catch (error) {
-      rows.push({ file, id: null, name: null, valid: false, errors: [(error as Error).message], warnings: [] });
+      rows.push({ file, id: null, name: null, valid: false, errors: [(error as Error).message], warnings: [], contentHash: null });
     }
   }
   const failed = rows.filter((x) => !x.valid).length;

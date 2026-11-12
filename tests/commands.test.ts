@@ -93,6 +93,14 @@ describe("reading", () => {
     expect(JSON.stringify(json)).not.toContain("abcd1234");
   });
 
+  it("get --keep-secrets prints the workflow as n8n sends it, with a warning", async () => {
+    fake.workflows.get(B)!.nodes = [{ id: "x", name: "Code", type: "n8n-nodes-base.code", parameters: { jsCode: "const password = 'abcd1234';" } }];
+    const { json, stderr } = await n8nctl(["get", B, "--keep-secrets"]);
+    expect(JSON.stringify(json)).toContain("abcd1234");
+    expect(json.versionId).toBe("v-1");
+    expect(stderr).toContain("holds the workflow's secrets");
+  });
+
   it("executions passes its filters to n8n and maps failed to error", async () => {
     const { json } = await n8nctl(["executions", A, "--status", "failed", "--limit", "5"]);
     expect(json.map((e: { id: string }) => e.id)).toEqual(["12"]);
@@ -216,6 +224,8 @@ describe("files", () => {
     const { code, json } = await n8nctl(["validate", dir]);
     expect(code).toBe(1);
     expect(json.counts).toEqual({ total: 2, passed: 1, failed: 1 });
+    const good = json.files.find((f: { file: string }) => f.file.endsWith("good.json"));
+    expect(good.contentHash).toMatch(/^[0-9a-f]{64}$/);
   });
 });
 

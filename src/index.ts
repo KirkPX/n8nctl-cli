@@ -166,7 +166,10 @@ withTarget(
 });
 
 withTarget(
-  program.command("get <workflow>").description("Print one workflow as JSON, secrets removed (ID or exact name)")
+  program
+    .command("get <workflow>")
+    .description("Print one workflow as JSON, secrets removed (ID or exact name)")
+    .option("--keep-secrets", "Print it exactly as n8n sends it, secrets included, to change and upload again")
 ).action(async (workflow: string, opts) => {
   const { getCommand } = await import("./cli/commands/get.js");
   await getCommand(workflow, merged(opts));
