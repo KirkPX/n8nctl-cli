@@ -86,6 +86,16 @@ describe("reading", () => {
     expect(named.json.map((w: { id: string }) => w.id)).toEqual([B]);
   });
 
+  it("list --full adds each workflow in saved form, from the list request alone", async () => {
+    fake.workflows.get(B)!.nodes = [{ id: "x", name: "Code", type: "n8n-nodes-base.code", parameters: { jsCode: "const password = 'abcd1234';" } }];
+    const before = fake.requests.length;
+    const { json } = await n8nctl(["list", "--full"]);
+    expect(fake.requests.length - before).toBe(1);
+    const b = json.find((w: { id: string }) => w.id === B);
+    expect(b.workflow._backup_metadata.content_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(b.workflow)).not.toContain("abcd1234");
+  });
+
   it("get finds a workflow by name and removes secrets", async () => {
     fake.workflows.get(B)!.nodes = [{ id: "x", name: "Code", type: "n8n-nodes-base.code", parameters: { jsCode: "const password = 'abcd1234';" } }];
     const { json } = await n8nctl(["get", "weekly report"]);

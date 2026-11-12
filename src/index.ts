@@ -159,6 +159,7 @@ withTarget(
     .option("--name <text>", "Only names that contain this text (any case)")
     .option("--tag <name...>", "Only workflows with every one of these tags")
     .option("--local", "Read the backup folder's index.json instead of the server")
+    .option("--full", "Add each whole workflow, secrets removed, to the JSON (no extra requests)")
     .option("--dir <folder>", "Backup folder for --local (default: the workflowsDir setting)")
 ).action(async (opts) => {
   const { listCommand } = await import("./cli/commands/list.js");

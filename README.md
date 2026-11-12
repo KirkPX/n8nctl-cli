@@ -120,7 +120,7 @@ Reading. None of these changes anything in n8n.
 
 | Command | What it does |
 |---|---|
-| `list` | Workflows on the server. `--active`, `--inactive`, `--archived`, `--exclude-archived`, `--name <text>`, `--tag <name>`. `--local` reads a backup folder instead |
+| `list` | Workflows on the server. `--active`, `--inactive`, `--archived`, `--exclude-archived`, `--name <text>`, `--tag <name>`. `--local` reads a backup folder instead. `--full` adds each whole workflow to the JSON |
 | `get <workflow>` | One workflow as JSON, secrets removed. `--keep-secrets` prints it exactly as n8n sends it, so a script can change it and upload it again |
 | `download <workflow...>` / `download --all` | Save workflows as files, secrets removed |
 | `backup [folder]` | Save every workflow, archived ones too, plus `index.json` and publish history. Writes files only: it never commits, pushes or deletes |

@@ -3,7 +3,9 @@
 import path from "node:path";
 import pc from "picocolors";
 import { resolveConfig } from "../../config.js";
+import { UsageError } from "../../errors.js";
 import { readIndex } from "../../workflow/files.js";
+import { savedForm } from "../../workflow/normalize.js";
 import type { Workflow } from "../../workflow/types.js";
 import { createClient, type ClientOpts } from "../client-helpers.js";
 import { reporter } from "../output.js";
@@ -17,6 +19,7 @@ export type ListOpts = ClientOpts & {
   tag?: string[];
   local?: boolean;
   dir?: string;
+  full?: boolean;
 };
 
 /** One row of `list`. The JSON form is documented in docs/json-output.md. */
@@ -30,10 +33,13 @@ export type ListRow = {
   createdAt: string | null;
   updatedAt: string | null;
   file: string | null;
+  /** With --full: the whole workflow in saved form, secrets removed. */
+  workflow?: Workflow;
 };
 
 export async function listCommand(opts: ListOpts = {}): Promise<void> {
   const r = reporter(opts);
+  if (opts.full && opts.local) throw new UsageError("--full reads n8n; a backup folder already holds the full workflows.");
   let rows = opts.local ? await localRows(opts) : await liveRows(opts);
   if (opts.active) rows = rows.filter((w) => w.active);
   if (opts.inactive) rows = rows.filter((w) => !w.active);
@@ -58,7 +64,8 @@ async function liveRows(opts: ListOpts): Promise<ListRow[]> {
     active: opts.active ? true : opts.inactive ? false : undefined,
     tags: opts.tag,
   });
-  return workflows.map(toRow);
+  // n8n's list answer already holds each whole workflow, so --full costs no extra request.
+  return workflows.map((w) => (opts.full ? { ...toRow(w), workflow: savedForm(w) } : toRow(w)));
 }
 
 export function toRow(w: Workflow): ListRow {

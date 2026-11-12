@@ -52,7 +52,11 @@ The folder then holds:
 
 An array, one object per workflow: `id`, `name`, `active`, `archived`, `tags` (names),
 `nodeCount` (or `null` with `--local`), `createdAt`, `updatedAt`, `file` (the saved file's
-path with `--local`, otherwise `null`).
+path with `--local`, otherwise `null`). With `--full`, each row also has `workflow`: the whole
+workflow in saved form, from the same one or two requests. n8n's list answer holds less
+about who the workflow is shared with than a single read, so `shared`, and with it
+`_backup_metadata.content_hash`, can differ from the file `backup` writes. Every other field is
+the same.
 
 ## Commands that change things
 
