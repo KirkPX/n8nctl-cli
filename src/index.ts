@@ -191,7 +191,7 @@ withTarget(
     .command("backup [folder]")
     .description("Save every workflow, index.json and publish history to a folder. Writes files only")
     .option("--concurrency <n>", "Workflows read at once (default: 4)", parseCount)
-    .option("--delay <ms>", "Wait between requests, to go easy on a busy n8n (default: 0)", parseCount)
+    .option("--delay <ms>", "Wait between requests, to go easy on a busy n8n (default: the delayMs setting, or 0)", parseCount)
 ).action(async (folder: string | undefined, opts) => {
   const { backupCommand } = await import("./cli/commands/backup.js");
   await backupCommand(folder, merged(opts));

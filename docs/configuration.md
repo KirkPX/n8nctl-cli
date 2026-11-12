@@ -33,6 +33,7 @@ See [examples/config.json](../examples/config.json) for a full file.
 | `accounts.<name>.email` | email | `email` | The email for one named sign-in. |
 | `readOnly` | boolean | `false` | Refuse every command that changes data. |
 | `timeoutMs` | integer, up to 600000 | `30000` | How long to wait for each request. Reading a page of full workflows always gets at least 60 seconds. |
+| `delayMs` | integer, up to 60000 | `0` | Wait this long between requests. Set it for an n8n that falls over under fast calls. `N8NCTL_DELAY_MS` overrides it; `backup --delay` overrides both. |
 | `workflowsDir` | folder | `workflows` | Where `download`, `backup`, `diff` and `list --local` keep files, relative to where you run the command. |
 
 The file never holds your API key or password.

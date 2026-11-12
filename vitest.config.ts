@@ -38,6 +38,10 @@ export default defineConfig({
       N8NCTL_API_KEY: "",
       N8NCTL_ACCOUNT: "",
       N8NCTL_READ_ONLY: "",
+      N8NCTL_DELAY_MS: "",
+      N8NCTL_EMAIL: "",
+      N8NCTL_PASSWORD: "",
+      N8NCTL_WORKFLOWS_DIR: "",
     },
   },
 });

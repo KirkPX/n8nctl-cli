@@ -128,6 +128,22 @@ describe("retries", () => {
   });
 });
 
+describe("spacing requests", () => {
+  it("sends requests from parallel callers at least minIntervalMs apart", async () => {
+    const times: number[] = [];
+    vi.stubGlobal("fetch", vi.fn(async () => {
+      times.push(Date.now());
+      return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+    }));
+    const client = makeClient({ minIntervalMs: 40 });
+    await Promise.all([client.request("/a"), client.request("/b"), client.request("/c")]);
+    vi.unstubAllGlobals();
+    expect(times).toHaveLength(3);
+    expect(times[1]! - times[0]!).toBeGreaterThanOrEqual(35);
+    expect(times[2]! - times[1]!).toBeGreaterThanOrEqual(35);
+  });
+});
+
 describe("failures read as plain messages", () => {
   it("names the host and the reason when the service cannot be reached", async () => {
     const cause = Object.assign(new Error("getaddrinfo ENOTFOUND"), { code: "ENOTFOUND" });

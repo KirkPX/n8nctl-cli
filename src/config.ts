@@ -19,6 +19,8 @@ export type ResolvedConfig = {
   account: string;
   email: string | null;
   timeoutMs?: number;
+  /** Milliseconds to wait between requests. 0 sends them as fast as n8n answers. */
+  delayMs: number;
   workflowsDir: string;
 };
 
@@ -37,7 +39,9 @@ export function resolveConfig(opts: ResolveOptions = {}, settings: Settings = lo
   const apiKey = opts.apiKey || env("N8NCTL_API_KEY") || getCredentialStore().getApiKey(account) || null;
   const email = env("N8NCTL_EMAIL") || own?.email || settings.email || null;
   const workflowsDir = env("N8NCTL_WORKFLOWS_DIR") || settings.workflowsDir || DEFAULT_WORKFLOWS_DIR;
-  return { baseUrl, apiKey, account, email, timeoutMs: settings.timeoutMs, workflowsDir };
+  const delayRaw = env("N8NCTL_DELAY_MS");
+  const delayMs = delayRaw !== undefined && /^\d+$/.test(delayRaw) ? Number(delayRaw) : (settings.delayMs ?? 0);
+  return { baseUrl, apiKey, account, email, timeoutMs: settings.timeoutMs, delayMs, workflowsDir };
 }
 
 /** The editor password: N8NCTL_PASSWORD, or the one `login --email` saved. */

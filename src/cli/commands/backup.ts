@@ -52,7 +52,8 @@ export async function backupCommand(dirArg: string | undefined, opts: BackupOpts
   const dir = path.resolve(dirArg ?? resolveConfig({ account: opts.account }).workflowsDir);
   const concurrency = opts.concurrency ?? 4;
   if (concurrency < 1) throw new UsageError("--concurrency must be 1 or more.");
-  const client = createClient({ ...opts, minIntervalMs: opts.delay ?? 0 });
+  // --delay wins over the delayMs setting; without either, requests are not spaced.
+  const client = createClient({ ...opts, ...(opts.delay !== undefined ? { minIntervalMs: opts.delay } : {}) });
   const startedAt = new Date().toISOString();
 
   const list = await client.listWorkflows();

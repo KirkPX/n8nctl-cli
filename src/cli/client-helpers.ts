@@ -20,7 +20,7 @@ export function createClient(opts: ClientOpts & { minIntervalMs?: number } = {})
     baseUrl: cfg.baseUrl,
     apiKey: cfg.apiKey,
     timeoutMs: cfg.timeoutMs,
-    minIntervalMs: opts.minIntervalMs,
+    minIntervalMs: opts.minIntervalMs ?? cfg.delayMs,
     onRetry: (info) => reportRetry(r, info),
   });
 }
@@ -42,7 +42,7 @@ export async function createEditor(opts: ClientOpts & { mfaCode?: string }, comm
   }
   const r = reporter(opts);
   return await EditorClient.login(
-    { baseUrl: cfg.baseUrl, timeoutMs: cfg.timeoutMs, onRetry: (info) => reportRetry(r, info) },
+    { baseUrl: cfg.baseUrl, timeoutMs: cfg.timeoutMs, minIntervalMs: cfg.delayMs, onRetry: (info) => reportRetry(r, info) },
     { email: cfg.email, password, mfaCode: opts.mfaCode }
   );
 }

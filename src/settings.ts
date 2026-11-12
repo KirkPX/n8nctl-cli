@@ -28,6 +28,8 @@ export const settingsSchema = z.strictObject({
   accounts: z.record(accountName, accountSettings).optional(),
   readOnly: z.boolean().optional(),
   timeoutMs: z.number().int().positive().max(600_000).optional(),
+  /** Wait at least this long between requests, for an n8n that falls over under fast calls. */
+  delayMs: z.number().int().min(0).max(60_000).optional(),
   /** Where download, backup, diff and `list --local` keep workflow files. */
   workflowsDir: z.string().trim().min(1).optional(),
 });
@@ -114,6 +116,7 @@ const SETTABLE: Record<string, Leaf> = {
   "accounts.*.email": "string",
   readOnly: "boolean",
   timeoutMs: "integer",
+  delayMs: "integer",
   workflowsDir: "string",
 };
 

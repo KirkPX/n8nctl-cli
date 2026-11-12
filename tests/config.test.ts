@@ -50,6 +50,7 @@ describe("resolveConfig precedence: flags > env > settings file/keychain > defau
       email: null,
       workflowsDir: "workflows",
       timeoutMs: undefined,
+      delayMs: 0,
     });
   });
 
@@ -86,6 +87,14 @@ describe("resolveConfig precedence: flags > env > settings file/keychain > defau
     process.env.N8NCTL_BASE_URL = "";
     process.env.N8NCTL_API_KEY = "";
     expect(resolveConfig()).toMatchObject({ baseUrl: DEFAULT_BASE_URL, apiKey: null });
+  });
+
+  it("reads delayMs from the settings file, and N8NCTL_DELAY_MS beats it", () => {
+    seed({ delayMs: 1000 });
+    expect(resolveConfig().delayMs).toBe(1000);
+    process.env.N8NCTL_DELAY_MS = "250";
+    expect(resolveConfig().delayMs).toBe(250);
+    delete process.env.N8NCTL_DELAY_MS;
   });
 
   it("passes timeoutMs through to the client options", () => {

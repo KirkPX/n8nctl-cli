@@ -55,6 +55,7 @@ export class ApiClient {
   private readonly minIntervalMs: number;
   private readonly onRetry?: (info: RetryInfo) => void;
   private lastRequestAt = 0;
+  private paceChain: Promise<void> = Promise.resolve();
 
   constructor(options: ClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/+$/, "");
@@ -131,10 +132,19 @@ export class ApiClient {
     return undefined;
   }
 
-  private async pace(): Promise<void> {
-    const wait = this.lastRequestAt + this.minIntervalMs - Date.now();
-    if (wait > 0) await sleep(wait);
-    this.lastRequestAt = Date.now();
+  /**
+   * Space requests at least `minIntervalMs` apart. Callers queue on one chain, so
+   * requests sent at the same moment by parallel workers still go out one at a time.
+   */
+  private pace(): Promise<void> {
+    if (this.minIntervalMs <= 0) return Promise.resolve();
+    const turn = this.paceChain.then(async () => {
+      const wait = this.lastRequestAt + this.minIntervalMs - Date.now();
+      if (wait > 0) await sleep(wait);
+      this.lastRequestAt = Date.now();
+    });
+    this.paceChain = turn;
+    return turn;
   }
 
   /**

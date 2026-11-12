@@ -7,5 +7,6 @@
   },
   "readOnly": false,
   "timeoutMs": 30000,
+  "delayMs": 0,
   "workflowsDir": "workflows"
 }
