@@ -160,6 +160,7 @@ withTarget(
     .option("--tag <name...>", "Only workflows with every one of these tags")
     .option("--local", "Read the backup folder's index.json instead of the server")
     .option("--full", "Add each whole workflow, secrets removed, to the JSON (no extra requests)")
+    .option("--keep-secrets", "With --full: each workflow exactly as n8n sends it, secrets included")
     .option("--dir <folder>", "Backup folder for --local (default: the workflowsDir setting)")
 ).action(async (opts) => {
   const { listCommand } = await import("./cli/commands/list.js");

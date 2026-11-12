@@ -20,6 +20,7 @@ export type ListOpts = ClientOpts & {
   local?: boolean;
   dir?: string;
   full?: boolean;
+  keepSecrets?: boolean;
 };
 
 /** One row of `list`. The JSON form is documented in docs/json-output.md. */
@@ -40,6 +41,8 @@ export type ListRow = {
 export async function listCommand(opts: ListOpts = {}): Promise<void> {
   const r = reporter(opts);
   if (opts.full && opts.local) throw new UsageError("--full reads n8n; a backup folder already holds the full workflows.");
+  if (opts.keepSecrets && !opts.full) throw new UsageError("--keep-secrets works with --full.");
+  if (opts.keepSecrets) r.warn("This output holds the workflows' secrets as n8n has them. Keep it out of Git and shared folders.");
   let rows = opts.local ? await localRows(opts) : await liveRows(opts);
   if (opts.active) rows = rows.filter((w) => w.active);
   if (opts.inactive) rows = rows.filter((w) => !w.active);
@@ -65,7 +68,10 @@ async function liveRows(opts: ListOpts): Promise<ListRow[]> {
     tags: opts.tag,
   });
   // n8n's list answer already holds each whole workflow, so --full costs no extra request.
-  return workflows.map((w) => (opts.full ? { ...toRow(w), workflow: savedForm(w) } : toRow(w)));
+  // --keep-secrets gives each workflow exactly as n8n sent it, for a check that must see a
+  // secret typed into a node, such as a scan for keys left in plain text.
+  if (!opts.full) return workflows.map(toRow);
+  return workflows.map((w) => ({ ...toRow(w), workflow: opts.keepSecrets ? w : savedForm(w) }));
 }
 
 export function toRow(w: Workflow): ListRow {

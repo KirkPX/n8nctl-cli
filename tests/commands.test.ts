@@ -96,6 +96,14 @@ describe("reading", () => {
     expect(JSON.stringify(b.workflow)).not.toContain("abcd1234");
   });
 
+  it("list --full --keep-secrets gives the workflows as n8n sends them, with a warning", async () => {
+    fake.workflows.get(B)!.nodes = [{ id: "x", name: "Code", type: "n8n-nodes-base.code", parameters: { jsCode: "const password = 'abcd1234';" } }];
+    const { json, stderr } = await n8nctl(["list", "--full", "--keep-secrets"]);
+    expect(JSON.stringify(json.find((w: { id: string }) => w.id === B).workflow)).toContain("abcd1234");
+    expect(stderr).toContain("holds the workflows' secrets");
+    expect((await n8nctl(["list", "--keep-secrets"])).code).toBe(1);
+  });
+
   it("get finds a workflow by name and removes secrets", async () => {
     fake.workflows.get(B)!.nodes = [{ id: "x", name: "Code", type: "n8n-nodes-base.code", parameters: { jsCode: "const password = 'abcd1234';" } }];
     const { json } = await n8nctl(["get", "weekly report"]);

@@ -56,7 +56,8 @@ path with `--local`, otherwise `null`). With `--full`, each row also has `workfl
 workflow in saved form, from the same one or two requests. n8n's list answer holds less
 about who the workflow is shared with than a single read, so `shared`, and with it
 `_backup_metadata.content_hash`, can differ from the file `backup` writes. Every other field is
-the same.
+the same. With `--full --keep-secrets`, `workflow` is each workflow exactly as n8n sends it,
+secrets included, for a check that must see them.
 
 ## Commands that change things
 
