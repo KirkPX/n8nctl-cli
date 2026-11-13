@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- Each release has a ready-built package file, `n8nctl-cli-<version>.tgz`, attached on
+  GitHub. Another project can depend on n8nctl by that file's address: it holds the built
+  CLI, so it installs with no build step and no install scripts, with npm or pnpm.
+- The README says how to depend on n8nctl from another project.
+
 ## 0.1.0
 
 First release.

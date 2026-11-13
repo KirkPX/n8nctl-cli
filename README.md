@@ -197,6 +197,23 @@ npm run doctor           # the same check, when the command itself is not found
 - **`n8nctl on PATH: shadowed`**: another program of the same name comes first on your PATH.
 - **"running scripts is disabled on this system"** (PowerShell): the execution policy blocks npm's `.ps1` launcher. Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
+## Use it from another project
+
+Each release on GitHub has a ready-built package file. A project that runs n8nctl from its
+scripts can depend on that file, so everyone who installs the project gets the same n8nctl:
+
+```json
+{
+  "dependencies": {
+    "n8nctl-cli": "https://github.com/KirkPX/n8nctl-cli/releases/download/v0.1.1/n8nctl-cli-0.1.1.tgz"
+  }
+}
+```
+
+The file holds the built CLI, so it installs with no build step and no install scripts (npm
+or pnpm). The command is then `node_modules/.bin/n8nctl`. To move to a new version, change the
+version in both places of the address and install again.
+
 ## Uninstall
 
 ```bash

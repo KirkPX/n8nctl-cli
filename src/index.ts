@@ -12,7 +12,7 @@ for (const stream of [process.stdout, process.stderr]) {
   });
 }
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 const program = new Command();
 

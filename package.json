@@ -1,6 +1,6 @@
 {
   "name": "n8nctl-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Manage n8n workflows from the terminal: list, back up, compare, upload and run",
   "type": "module",

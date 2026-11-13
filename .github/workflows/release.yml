@@ -1,0 +1,73 @@
+name: Release
+
+# On a version tag, build the package file once and attach it to the GitHub release.
+# Projects that depend on n8nctl install this file: it holds dist/, so it runs with no
+# build step and no install scripts.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Package and release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Check the tag matches the version
+        shell: bash
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "The tag is $GITHUB_REF_NAME, but package.json says $version." >&2
+            exit 1
+          fi
+
+      - name: Pack
+        shell: bash
+        run: |
+          npm run build
+          npm pack --ignore-scripts
+          ls -l n8nctl-cli-*.tgz
+
+      # Install the file the way a dependent project does, with no scripts, and run it.
+      - name: Install the package file with npm and with pnpm
+        shell: bash
+        run: |
+          file="$PWD/$(ls n8nctl-cli-*.tgz)"
+          version="$(node -p "require('./package.json').version")"
+          for pm in npm pnpm; do
+            dir="$(mktemp -d)"
+            cd "$dir"
+            echo '{"name":"package-check","private":true}' > package.json
+            if [ "$pm" = npm ]; then npm install "$file" --ignore-scripts --no-audit --no-fund
+            else npx --yes pnpm@10 add "$file" --ignore-scripts; fi
+            got="$(node_modules/.bin/n8nctl --version)"
+            [ "$got" = "$version" ] || { echo "$pm: n8nctl --version gave '$got', expected $version" >&2; exit 1; }
+            echo "$pm: n8nctl $got"
+            cd - >/dev/null
+          done
+
+      - name: Create the release and attach the file
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes="$(awk -v v="## ${GITHUB_REF_NAME#v}" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md)"
+          gh release create "$GITHUB_REF_NAME" n8nctl-cli-*.tgz --title "n8nctl ${GITHUB_REF_NAME#v}" --notes "$notes"
